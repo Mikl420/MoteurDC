@@ -59,6 +59,7 @@ const int pwmPin= 23;
 const int sens1= 4;
 const int sens2= 5;
 
+int16_t angle=0;
 
 //Nv code, Ajout de IRQ et RX
 //const int IrqPin = 6; // pas necessaire c'est la clock qui va faire les irq
@@ -66,8 +67,10 @@ const int sens2= 5;
 //const int RxPin = 6;
 
 struct ThreadCommArgs{//pr thread de gestComm
-	const int newClock = 2;
+	const int newClock = 3;
 	const int RxPin = 6;
+	//int newClock = 3;
+	//int RxPin = 6;
 };
 
 
@@ -138,7 +141,6 @@ int main() {
 	pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&rtThreadTid, &threadAttributes, &rtSoftTimerThread, 0);
 	pthread_attr_destroy(&threadAttributes);
-
 
 
 	//attente de la fin du thread de gestComm

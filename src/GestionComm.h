@@ -8,7 +8,13 @@
 
 #ifndef GESTIONCOMM_H_
 #define GESTIONCOMM_H_
+#include "wiringPi.h"
+#include "unistd.h"
+#include <iostream>
+#include <cstdint>
+#include <time.h>
 
+extern int16_t angle;
 
 
 
