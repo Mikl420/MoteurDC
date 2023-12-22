@@ -12,9 +12,7 @@ struct ThreadCommArgs{//pr thread de gestComm
 	const int RxPin;
 };
 
-//ThreadCommArgs* threadCommArgs= static_cast<ThreadCommArgs*>(args);
-//const int newClock=threadCommArgs->newClock;
-//const int RxPin = 6;
+//Ajouter ds stm la copie d'angle pour eviter probleme!!!!!!!!!!!!!!!!!!!!!
 
 int iteration =0;
 const int nbBits = 16;//nb bits à recevoir, 17 à la place de 16 car premier bit recu tjs =0
@@ -51,7 +49,7 @@ void* GestionComm(void* args){
 	pthread_setschedparam(pthread_self(), policy, &param);
 	//std::cout<<pthread_getschedparam(pthread_self(), &policy, &param);
 	pthread_getschedparam(pthread_self(), &policy, &param);
-			std::cout << "Thread RT:  SCHED_FIFO=" << std::boolalpha << (policy == SCHED_FIFO)
+			std::cout << "Thread Comm:  SCHED_FIFO=" << std::boolalpha << (policy == SCHED_FIFO)
 					<< "  prio=" << param.sched_priority << std::endl;
 
 

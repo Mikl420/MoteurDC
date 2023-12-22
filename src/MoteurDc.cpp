@@ -14,6 +14,7 @@
 //Nvelle
 #include <wiringPi.h>
 #include "GestionComm.h"
+#include "Pid.h"
 
 //connecter rasp au wifi puis voir son ip et ajouter dans lauch config
 //ajouter ds properties ,C++BUILD,Settings,Cross G++ linker, lib   les librairies pthread wiringPI et libWiringPI(/usr/lib)?
@@ -71,6 +72,11 @@ struct ThreadCommArgs{//pr thread de gestComm
 	const int RxPin = 6;
 };
 
+struct ThreadPidArgs{//pr thread de gestComm
+	//const int newClock = 3;
+	//const int RxPin = 6;
+};
+
 
 
 // Fonctions du timer lui-même
@@ -118,6 +124,9 @@ int main() {
 	pinMode(threadCommArgs.newClock,OUTPUT);
 	digitalWrite(threadCommArgs.newClock,HIGH);
 
+	ThreadCommArgs threadPidArgs;
+
+
 
 	std::cout << "Real-Time software Timer on Raspberry Pi 3" << std::endl;
 	char hostname[100];
@@ -130,7 +139,6 @@ int main() {
 	// Configuration et lancement du thread
 	pthread_attr_t threadAttributes;
 	pthread_attr_init(&threadAttributes);
-
 	pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&rtThreadTid, &threadAttributes, &rtSoftTimerThread, 0);
 	pthread_attr_destroy(&threadAttributes);
@@ -139,21 +147,24 @@ int main() {
 	pthread_t threadCommTid;//creation du thread tid
 	pthread_attr_t threadAttributes2;// Configuration et lancement du thread
 	pthread_attr_init(&threadAttributes2);
-	/*
-	pthread_attr_setschedpolicy(&threadAttributes2, SCHED_FIFO);
-	struct sched_param param;
-	param.sched_priority = 95; // Exemple de priorité, ajustez selon vos besoins
-	pthread_attr_setschedparam(&threadAttributes2, &param);
-	*/
 	pthread_attr_setdetachstate(&threadAttributes2, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&threadCommTid, &threadAttributes2, &GestionComm, static_cast<void*>(&threadCommArgs));//
-
 	pthread_attr_destroy(&threadAttributes2);
+
+	//Thread Pid
+	pthread_t threadPidTid;//creation du thread tid
+	pthread_attr_t threadPidAttributes;// Configuration et lancement du thread
+	pthread_attr_init(&threadPidAttributes);
+	pthread_attr_setdetachstate(&threadPidAttributes, PTHREAD_CREATE_JOINABLE);
+	pthread_create(&threadPidTid, &threadPidAttributes, &pid, static_cast<void*>(&threadPidArgs));//
+	pthread_attr_destroy(&threadPidAttributes);
 
 	// Attente la fin du threads - join
 	pthread_join(rtThreadTid, 0);
 	//attente de la fin du thread de gestComm
 	pthread_join(threadCommTid, 0);
+	//attente de la fin du thread de pid
+	pthread_join(threadPidTid, 0);
 
 	return 0;
 }
@@ -187,6 +198,14 @@ void initialisationPWM(int pwm){
 void gestionSens(){
 	pinMode(sens1,OUTPUT);
 	pinMode(sens2,OUTPUT);
+	//digitalWrite(sens1,LOW);
+	//digitalWrite(sens2,HIGH);
+}
+void sensDroite(){
+	digitalWrite(sens1,LOW);
+	digitalWrite(sens2,HIGH);
+}
+void sensGauche(){
 	digitalWrite(sens1,LOW);
 	digitalWrite(sens2,HIGH);
 }
