@@ -69,8 +69,6 @@ int16_t angle=0;
 struct ThreadCommArgs{//pr thread de gestComm
 	const int newClock = 3;
 	const int RxPin = 6;
-	//int newClock = 3;
-	//int RxPin = 6;
 };
 
 
@@ -120,34 +118,42 @@ int main() {
 	pinMode(threadCommArgs.newClock,OUTPUT);
 	digitalWrite(threadCommArgs.newClock,HIGH);
 
-	pthread_t threadCommTid;//creation du thread tid
-	pthread_attr_t threadAttributes2;// Configuration et lancement du thread
-	pthread_attr_init(&threadAttributes2);
-	pthread_attr_setdetachstate(&threadAttributes2, PTHREAD_CREATE_JOINABLE);
-	pthread_create(&threadCommTid, &threadAttributes2, &GestionComm, static_cast<void*>(&threadCommArgs));//
-	pthread_attr_destroy(&threadAttributes2);
-
 
 	std::cout << "Real-Time software Timer on Raspberry Pi 3" << std::endl;
 	char hostname[100];
 	gethostname(hostname, 100);
 	std::cout << "Machine name: " << hostname << std::endl;
 
+
 	// TID
 	pthread_t rtThreadTid;
 	// Configuration et lancement du thread
 	pthread_attr_t threadAttributes;
 	pthread_attr_init(&threadAttributes);
+
 	pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&rtThreadTid, &threadAttributes, &rtSoftTimerThread, 0);
 	pthread_attr_destroy(&threadAttributes);
 
+	//Thread Comm
+	pthread_t threadCommTid;//creation du thread tid
+	pthread_attr_t threadAttributes2;// Configuration et lancement du thread
+	pthread_attr_init(&threadAttributes2);
+	/*
+	pthread_attr_setschedpolicy(&threadAttributes2, SCHED_FIFO);
+	struct sched_param param;
+	param.sched_priority = 95; // Exemple de priorité, ajustez selon vos besoins
+	pthread_attr_setschedparam(&threadAttributes2, &param);
+	*/
+	pthread_attr_setdetachstate(&threadAttributes2, PTHREAD_CREATE_JOINABLE);
+	pthread_create(&threadCommTid, &threadAttributes2, &GestionComm, static_cast<void*>(&threadCommArgs));//
 
-	//attente de la fin du thread de gestComm
-	pthread_join(threadCommTid, 0);
+	pthread_attr_destroy(&threadAttributes2);
 
 	// Attente la fin du threads - join
 	pthread_join(rtThreadTid, 0);
+	//attente de la fin du thread de gestComm
+	pthread_join(threadCommTid, 0);
 
 	return 0;
 }
