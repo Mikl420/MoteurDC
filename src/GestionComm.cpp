@@ -127,7 +127,7 @@ void* GestionComm(void* args){
 				//}
 				 * /
 				 */
-			}while(duration.tv_nsec<10000);//voir quel temps à mettre
+			}while(duration.tv_nsec<10000);//voir quel temps à mettre   prend160µs
 		}
 
 		/*

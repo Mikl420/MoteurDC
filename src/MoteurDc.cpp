@@ -15,6 +15,8 @@
 #include <wiringPi.h>
 #include "GestionComm.h"
 #include "Pid.h"
+#include "MoteurDc.h"
+
 
 //connecter rasp au wifi puis voir son ip et ajouter dans lauch config
 //ajouter ds properties ,C++BUILD,Settings,Cross G++ linker, lib   les librairies pthread wiringPI et libWiringPI(/usr/lib)?
@@ -78,7 +80,7 @@ struct ThreadPidArgs{//pr thread de gestComm
 };
 
 
-
+/*
 // Fonctions du timer lui-même
 void* rtSoftTimerThread(void* arg);
 void naiveSleepUntil(struct timespec* sleepEndTime);
@@ -89,7 +91,7 @@ void initialisationRelais();
 void gestionSens();
 void initialisationPWM(int pwm);
 void stopRelais();
-
+*/
 //Nvelles méthodes pour comm
 //void initialisationRx();
 
@@ -206,8 +208,8 @@ void sensDroite(){
 	digitalWrite(sens2,HIGH);
 }
 void sensGauche(){
-	digitalWrite(sens1,LOW);
-	digitalWrite(sens2,HIGH);
+	digitalWrite(sens1,HIGH);
+	digitalWrite(sens2,LOW);
 }
 
 //Initialisation Rx pr comm
@@ -269,7 +271,8 @@ void* rtSoftTimerThread(void* arg) {
 	//}
 	stopRelais();
 	*/
-
+	gestionSens();
+	initialisationPWM(0);
 
 
 
