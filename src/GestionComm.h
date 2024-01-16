@@ -15,6 +15,7 @@
 #include <time.h>
 
 extern int16_t angle;
+extern long long angleRasp;
 
 
 

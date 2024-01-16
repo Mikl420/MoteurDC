@@ -17,6 +17,9 @@ struct ThreadCommArgs{//pr thread de gestComm
 int iteration =0;
 const int nbBits = 16;//nb bits à recevoir, 17 à la place de 16 car premier bit recu tjs =0
 unsigned char receptionData[nbBits];
+int anglePrecedent=0;
+int nbOverflow=0;
+bool isOverflow=false;
 
 
 void timespecDiffMe(const struct timespec* start, const struct timespec* end, struct timespec* duration) {
@@ -151,8 +154,27 @@ void* GestionComm(void* args){
 		 */
 		for (int i = 15; i >= 0; --i) {
 			angle = (angle << 1) | receptionData[i];
-		    }
-		std::cout<< "valeur angle: "<<angle<<std::endl;
+		}
+
+		//**********Gestion overflow***********
+		if(abs(angle-anglePrecedent)>31900 && abs(angle-anglePrecedent)<32100){
+			if(angle>0){
+				nbOverflow++;
+			}else{
+				nbOverflow--;
+			}
+			isOverflow=true;
+		}
+		//***************Gestion saut d'angle***************
+		if(isOverflow || ((abs(angle-anglePrecedent))<150)){
+			angleRasp = (int) angle + (32000*nbOverflow);
+			anglePrecedent=angle;
+			isOverflow=false;
+		}else{
+			std::cout<< "----------------Prob Comm saut d'angle >50°----------------"<<std::endl;
+		}
+
+		std::cout<< "valeur angle: "<<angleRasp<<std::endl;//angleRasp
 		std::cout<< ""<<std::endl;
 		//sleep(0.01);//a supprimer
 		digitalWrite(newClock,HIGH);

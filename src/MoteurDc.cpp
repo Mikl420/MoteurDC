@@ -63,6 +63,7 @@ const int sens1= 4;
 const int sens2= 5;
 
 int16_t angle=0;
+long long angleRasp;
 
 //Nv code, Ajout de IRQ et RX
 //const int IrqPin = 6; // pas necessaire c'est la clock qui va faire les irq
